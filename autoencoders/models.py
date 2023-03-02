@@ -1,42 +1,54 @@
-import tensorflow as tf
-from tensorflow.keras.layers import Input, Conv2D, Flatten, Dense, Reshape, Conv2DTranspose
-from tensorflow.keras.models import Model
-import tensorflow.keras.backend as K
+import torch
+import torch.nn as nn
 
-import numpy as np 
+# Build the autoencoder
+class Encoder(nn.Module):
+    def __init__(self, channels, embedding_dim):
+        super(Encoder, self).__init__()
+        self.conv1 = nn.Conv2d(channels, 32, kernel_size=3, stride=2, padding=1)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1)
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1)
+        self.flatten = nn.Flatten()
+        self.fc = nn.Linear(128 * 4 * 4, embedding_dim)
+        
+    def forward(self, x):
+        x = self.conv1(x)
+        x = nn.ReLU()(x)
+        x = self.conv2(x)
+        x = nn.ReLU()(x)
+        x = self.conv3(x)
+        x = nn.ReLU()(x)
+        x = self.flatten(x)
+        x = self.fc(x)
+        return x
 
-class Autoencoder(tf.keras.models.Model):
-    def __init__(self, image_size, channels, embedding_dim,  **kwargs):
-        super(Autoencoder, self).__init__(**kwargs)
-        self.image_size = image_size
-        self.channels = channels
-        self.embedding_dim = embedding_dim
-        self.encoder_output = None
+class Decoder(nn.Module):
+    def __init__(self, channels, embedding_dim):
+        super(Decoder, self).__init__()
+        self.fc = nn.Linear(embedding_dim, 128 * 4 * 4)
+        self.unflatten = nn.Unflatten(1, (128, 4, 4))
+        self.deconv1 = nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1)
+        self.deconv2 = nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1)
+        self.deconv3 = nn.ConvTranspose2d(32, channels, kernel_size=3, stride=2, padding=1, output_padding=1)
+        
+    def forward(self, x):
+        x = self.fc(x)
+        x = self.unflatten(x)
+        x = self.deconv1(x)
+        x = nn.ReLU()(x)
+        x = self.deconv2(x)
+        x = nn.ReLU()(x)
+        x = self.deconv3(x)
+        x = nn.Sigmoid()(x)
+        return x
 
-        self.encoder()
-        self.decoder()
-    
-    def encoder(self):
-        self.encoder_input = Input(shape=(self.image_size, self.image_size, self.channels), name="encoder_input")
-        x = Conv2D(32, (3, 3), strides=2, activation="relu", padding="same")(self.encoder_input)
-        x = Conv2D(64, (3, 3), strides=2, activation="relu", padding="same")(x)
-        x = Conv2D(128, (3, 3), strides=2, activation="relu", padding="same")(x)
-        self.encoder_out_dim = x.shape[1:]
-        x = Flatten()(x)
-        self.encoder_output = Dense(self.embedding_dim, name="encoder_output")(x)
-        self.encoder = tf.keras.models.Model(inputs=self.encoder_input, outputs=self.encoder_output)
-    
-    def decoder(self):
-        decoder_input = Input(shape=(self.embedding_dim, ), name="decoder_input")
-        x = Dense(np.prod(self.encoder_out_dim))(decoder_input)
-        x = Reshape(self.encoder_out_dim)(x)
-        x = Conv2DTranspose(128, (3, 3), strides=2, activation="relu", padding="same")(x)
-        x = Conv2DTranspose(64, (3, 3), strides=2, activation="relu", padding="same")(x)
-        x = Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(x)
-        self.decoder_output = Conv2D(self.channels, (3, 3), strides=1, activation="sigmoid", padding="same", name="decoder_output")(x)
-        self.decoder = tf.keras.models.Model(inputs=decoder_input, outputs=self.decoder_output)
-    
-    def call(self, x):
-        encoded = self.encoder(x)
-        decoded = self.decoder(encoded)
-        return decoded
+class Autoencoder(nn.Module):
+    def __init__(self, channels, embedding_dim):
+        super(Autoencoder, self).__init__()
+        self.encoder = Encoder(channels, embedding_dim)
+        self.decoder = Decoder(channels, embedding_dim)
+        
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.decoder(x)
+        return x
