@@ -13,11 +13,11 @@ class Encoder(nn.Module):
         
     def forward(self, x):
         x = self.conv1(x)
-        x = nn.ReLU()(x)
+        x = nn.GELU()(x)
         x = self.conv2(x)
-        x = nn.ReLU()(x)
+        x = nn.GELU()(x)
         x = self.conv3(x)
-        x = nn.ReLU()(x)
+        x = nn.GELU()(x)
         x = self.flatten(x)
         x = self.fc(x)
         return x
@@ -27,19 +27,22 @@ class Decoder(nn.Module):
         super(Decoder, self).__init__()
         self.fc = nn.Linear(embedding_dim, 128 * 4 * 4)
         self.unflatten = nn.Unflatten(1, (128, 4, 4))
-        self.deconv1 = nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.deconv2 = nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.deconv3 = nn.ConvTranspose2d(32, channels, kernel_size=3, stride=2, padding=1, output_padding=1)
+        self.deconv1 = nn.ConvTranspose2d(128, 128, kernel_size=3, stride=2, padding=1, output_padding=1)
+        self.deconv2 = nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1)
+        self.deconv3 = nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1)
+        self.output = nn.Conv2d(32, channels, kernel_size=1, stride=1)
         
     def forward(self, x):
         x = self.fc(x)
+        # x = x.reshape(x.shape[0], 128, 4, 4)
         x = self.unflatten(x)
         x = self.deconv1(x)
-        x = nn.ReLU()(x)
+        x = nn.GELU()(x)
         x = self.deconv2(x)
-        x = nn.ReLU()(x)
+        x = nn.GELU()(x)
         x = self.deconv3(x)
-        x = nn.Sigmoid()(x)
+        x = nn.GELU()(x)
+        x = self.output(x)
         return x
 
 class Autoencoder(nn.Module):
