@@ -1,21 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-
-class Sampling(nn.Module):
-    """
-    Uses (z_mean, z_log_var) to sample z, the vector encoding a digit.
-    """
-    def __init__(self):
-        super(Sampling, self).__init__()
-
-    def forward(self, z_mean, z_log_var):
-        batch = z_mean.size(0)
-        dim = z_mean.size(1)
-        epsilon = torch.randn(batch, dim)
-        if torch.cuda.is_available():
-            epsilon = epsilon.cuda()
-        return z_mean + torch.exp(0.5 * z_log_var) * epsilon
 
 # Build the autoencoder
 class Encoder(nn.Module):
@@ -28,27 +12,27 @@ class Encoder(nn.Module):
         
         self.z_mean = nn.Linear(128 * 4 * 4, embedding_dim)
         self.z_log_var = nn.Linear(128 * 4 * 4, embedding_dim)
-
-        self.sampling = Sampling()
-
-        self.kl_div = 0
+    
+    def _sampling(self, z_mean, z_log_var):
+        epsilon = torch.rand_like(z_log_var)
+        if torch.cuda.is_available():
+            epsilon = epsilon.cuda()
+        return z_mean + torch.exp(0.5 * z_log_var) * epsilon
         
     def forward(self, x):
         x = self.conv1(x)
-        x = nn.GELU()(x)
+        x = nn.ReLU()(x)
         x = self.conv2(x)
-        x = nn.GELU()(x)
+        x = nn.ReLU()(x)
         x = self.conv3(x)
-        x = nn.GELU()(x)
+        x = nn.ReLU()(x)
         x = self.flatten(x)
 
         z_mean = self.z_mean(x)
         z_log_var = self.z_log_var(x)
-        z = self.sampling(z_mean, z_log_var)
+        z = self._sampling(z_mean, z_log_var)
 
-        self.kl_div = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - z_log_var.exp())
-
-        return z
+        return z, z_mean, z_log_var
 
 class Decoder(nn.Module):
     def __init__(self, channels, embedding_dim):
@@ -64,11 +48,11 @@ class Decoder(nn.Module):
         x = self.fc(x)
         x = self.unflatten(x)
         x = self.deconv1(x)
-        x = nn.GELU()(x)
+        x = nn.ReLU()(x)
         x = self.deconv2(x)
-        x = nn.GELU()(x)
+        x = nn.ReLU()(x)
         x = self.deconv3(x)
-        x = nn.GELU()(x)
+        x = nn.ReLU()(x)
         x = self.output(x)
         return x
 
@@ -80,6 +64,6 @@ class VAE(nn.Module):
 
     def forward(self, x):
         """Call the model on a particular input."""
-        z = self.encoder(x)
+        z, z_mean, z_log_var = self.encoder(x)
         reconstructed = self.decoder(z)
-        return reconstructed
+        return reconstructed, z_mean, z_log_var
