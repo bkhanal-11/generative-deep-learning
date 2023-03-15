@@ -30,6 +30,8 @@ class Encoder(nn.Module):
         self.z_log_var = nn.Linear(128 * 4 * 4, embedding_dim)
 
         self.sampling = Sampling()
+
+        self.kl_div = 0
         
     def forward(self, x):
         x = self.conv1(x)
@@ -43,7 +45,10 @@ class Encoder(nn.Module):
         z_mean = self.z_mean(x)
         z_log_var = self.z_log_var(x)
         z = self.sampling(z_mean, z_log_var)
-        return z_mean, z_log_var, z
+
+        self.kl_div = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - z_log_var.exp())
+
+        return z
 
 class Decoder(nn.Module):
     def __init__(self, channels, embedding_dim):
@@ -72,17 +77,9 @@ class VAE(nn.Module):
         super(VAE, self).__init__()
         self.encoder = Encoder(channels, embedding_dim)
         self.decoder = Decoder(channels, embedding_dim)
-        self.total_loss_tracker = nn.MSELoss(reduction='mean')
-        self.reconstruction_loss_tracker = nn.MSELoss(reduction='mean')
-        self.kl_loss_tracker = nn.MSELoss(reduction='mean')
 
     def forward(self, x):
         """Call the model on a particular input."""
-        z_mean, z_log_var, z = self.encoder(x)
-        reconstruction = self.decoder(z)
-        return z_mean, z_log_var, reconstruction
-
-    def loss_function(self, x, z_mean, z_log_var, reconstruction):
-        reconstruction_loss = F.binary_cross_entropy(reconstruction, x, reduction="sum")
-        kl_divergence = -0.5 * torch.sum(1 + z_log_var - z_mean.pow(2) - z_log_var.exp())
-        return reconstruction_loss + kl_divergence
+        z = self.encoder(x)
+        reconstructed = self.decoder(z)
+        return reconstructed

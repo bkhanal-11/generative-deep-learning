@@ -7,7 +7,7 @@ from models import VAE
 from torchsummary import summary
 
 # Define hyperparameters
-batch_size = 64
+batch_size = 16
 learning_rate = 0.0005
 num_epochs = 10
 
@@ -27,10 +27,12 @@ train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 model = VAE(channels=1, embedding_dim=2)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+criterion = nn.MSELoss()
 
 model.to(device)
-
+criterion.to(device)
 # print(summary(model, (1,32,32)))
+# print(next(iter(i.size() for i,j in train_loader)))
 
 # Train the model for 10 epochs
 for epoch in range(num_epochs):
@@ -39,14 +41,16 @@ for epoch in range(num_epochs):
         # Move the input data to the device
         inputs = inputs.to(device)
 
+        # Feed the input data to the model to get the output
+        reconstructed = model(inputs)
         # Clear the gradients
         optimizer.zero_grad()
 
-        # Feed the input data to the model to get the output
-        z_mean, z_log_var, reconstruction = model(inputs)
-
         # Calculate the loss using the output and the ground truth labels
-        loss = model.loss_function(inputs, z_mean, z_log_var, reconstruction)
+        # loss = model.loss_function(inputs, z_mean, z_log_var, reconstruction)
+
+        loss_mse = criterion(inputs, reconstructed)
+        loss = loss_mse + model.encoder.kl_div
 
         # Backpropagate the loss to update the model parameters
         loss.backward()
@@ -57,3 +61,6 @@ for epoch in range(num_epochs):
         if i % 100 == 99:
             print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 100))
             running_loss = 0.0
+
+# Save the trained model
+torch.save(model, "vae_mnist.pth")
