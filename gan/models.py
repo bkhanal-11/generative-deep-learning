@@ -10,9 +10,6 @@ class Generator(nn.Module):
             self._generator_block(hidden_dim, hidden_dim * 2),
             self._generator_block(hidden_dim * 2, hidden_dim * 4),
             self._generator_block(hidden_dim * 4, hidden_dim * 8),
-        )
-
-        self.output = nn.Sequential(
             nn.Linear(hidden_dim * 8, image_dim),
             nn.Sigmoid(),
         )
@@ -22,10 +19,10 @@ class Generator(nn.Module):
             nn.Linear(input_dim, output_dim),
             nn.BatchNorm1d(output_dim),
             nn.ReLU(inplace=True),
-    )
+            )
     
     def forward(self, x):
-        return self.output(self.generator(x))
+        return self.generator(x)
 
 class Discriminator(nn.Module):
     def __init__(self, image_dim=784, hidden_dim=128):
@@ -40,9 +37,9 @@ class Discriminator(nn.Module):
     
     def _discriminator_block(self, input_dim, output_dim):
         return nn.Sequential(
-        nn.Linear(input_dim, output_dim),
-        nn.LeakyReLU(0.2, inplace=True),
-    )
+            nn.Linear(input_dim, output_dim),
+            nn.LeakyReLU(0.2, inplace=True),
+            )
     
     def forward(self, x):
         return self.discriminator(x)
