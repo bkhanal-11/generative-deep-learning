@@ -106,6 +106,7 @@ for epoch in range(n_epochs):
             mean_discriminator_loss = 0
         cur_step += 1
 
+# Flush writer for viewing on tensorboard
 writer.flush()
 
 # Save the trained model
