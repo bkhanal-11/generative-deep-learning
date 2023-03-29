@@ -110,19 +110,19 @@ for epoch in range(n_epochs):
             if visualization:
                 show_tensor_images(fake)
                 show_tensor_images(real)
-            step_bins = 20
-            num_examples = (len(generator_losses) // step_bins) * step_bins
-            plt.plot(
-                range(num_examples // step_bins), 
-                torch.Tensor(generator_losses[:num_examples]).view(-1, step_bins).mean(1),
-                label="Generator Loss"
-            )
-            plt.plot(
-                range(num_examples // step_bins), 
-                torch.Tensor(critic_losses[:num_examples]).view(-1, step_bins).mean(1),
-                label="Critic Loss"
-            )
-            plt.legend()
-            plt.show()
+                step_bins = 20
+                num_examples = (len(generator_losses) // step_bins) * step_bins
+                plt.plot(
+                    range(num_examples // step_bins), 
+                    torch.Tensor(generator_losses[:num_examples]).view(-1, step_bins).mean(1),
+                    label="Generator Loss"
+                )
+                plt.plot(
+                    range(num_examples // step_bins), 
+                    torch.Tensor(critic_losses[:num_examples]).view(-1, step_bins).mean(1),
+                    label="Critic Loss"
+                )
+                plt.legend()
+                plt.show()
 
         cur_step += 1
