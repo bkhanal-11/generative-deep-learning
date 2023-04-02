@@ -1,4 +1,0 @@
-# Style GAN
-
-coming soon
-
