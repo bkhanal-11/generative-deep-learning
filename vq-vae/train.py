@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import savgol_filter
+from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -10,7 +9,6 @@ import torch.optim as optim
 
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-from torchvision.utils import make_grid
 
 from models import VQVAE
 
@@ -19,7 +17,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparameters
 batch_size = 256
-num_training_updates = 15000
+EPOCHS = 15000
 
 num_hiddens = 128
 num_residual_hiddens = 32
@@ -30,10 +28,9 @@ num_embeddings = 512
 
 commitment_cost = 0.25
 
-decay = 0.99
-
 learning_rate = 1e-3
 
+# Dataloader
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5,0.5,0.5), (1.0,1.0,1.0))
@@ -50,17 +47,18 @@ validation_data = datasets.CIFAR10(root="data", train=False, download=True, tran
 validation_loader = DataLoader(validation_data, batch_size=32, shuffle=True, pin_memory=True)
 
 
+# Define a model
 model = VQVAE(num_hiddens, num_residual_layers, num_residual_hiddens,
               num_embeddings, embedding_dim, 
-              commitment_cost, decay).to(device)
+              commitment_cost).to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=learning_rate, amsgrad=False)
 
 model.train()
-train_res_recon_error = []
-train_res_perplexity = []
+train_recon_error = []
+train_total_loss = []
 
-for i in range(num_training_updates):
+for i in range(EPOCHS):
     (data, _) = next(iter(training_loader))
     data = data.to(device)
     optimizer.zero_grad()
@@ -72,13 +70,11 @@ for i in range(num_training_updates):
 
     optimizer.step()
     
-    train_res_recon_error.append(recon_error.item())
-    train_res_perplexity.append(perplexity.item())
+    train_recon_error.append(recon_error.item())
+    train_total_loss.append(loss.item())
 
-    if (i+1) % 100 == 0:
-        print('%d iterations' % (i+1))
-        print('recon_error: %.3f' % np.mean(train_res_recon_error[-100:]))
-        print('perplexity: %.3f' % np.mean(train_res_perplexity[-100:]))
-        print()
+    if (i + 1) % 100 == 0:
+        print(f'Epoch {i+1}: Reconstruction Error: {np.mean(train_recon_error[-100:])} | Traing Loss: {np.mean(train_total_loss[-100:])}')
 
 torch.save(model, 'vq_vae.pt')
+
