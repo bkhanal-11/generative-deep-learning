@@ -12,6 +12,9 @@ import torchvision.transforms as transforms
 
 from models import VQVAE
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
+
 # Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -74,7 +77,13 @@ for i in range(EPOCHS):
     train_total_loss.append(loss.item())
 
     if (i + 1) % 100 == 0:
+        writer.add_scalar("Reconstruction Error | Train", np.mean(train_recon_error[-100:]), i+1)
+        writer.add_scalar("Traing Loss | Train", np.mean(train_total_loss[-100:]), i+1)
         print(f'Epoch {i+1}: Reconstruction Error: {np.mean(train_recon_error[-100:])} | Traing Loss: {np.mean(train_total_loss[-100:])}')
 
+
+writer.flush()
+
+# Save the trained model
 torch.save(model, 'vq_vae.pt')
 
