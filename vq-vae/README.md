@@ -4,6 +4,8 @@ VQ-VAE (Vector Quantized Variational Autoencoder) is a type of generative model 
 
 Here's how VQ-VAE works in detail:
 
+![VQVAE](assets/architecture.png)
+
 ### Encoder 
 
 The input data is first fed into an encoder network, which reduces the dimensionality of the data and encodes it into a lower-dimensional representation (code).
