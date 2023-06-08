@@ -6,6 +6,8 @@ The generator takes a random noise vector as input and generates a sample that i
 
 During training, the generator tries to generate samples that will fool the discriminator into thinking they are real, while the discriminator tries to distinguish between real and generated samples. The two components are trained together in an adversarial setting, with the generator trying to maximize the probability of fooling the discriminator, and the discriminator trying to correctly classify samples as real or fake.
 
+![GAN](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fmiro.medium.com%2Fmax%2F601%2F1*Y_AGVp0EEGEpB1Q25G6edQ.jpeg&f=1&nofb=1&ipt=001df1a64971763b47881ae0f9d7414b285288bd0f6b06bf39caba22b590e2f7&ipo=images)
+
 The loss function used in GANs is called the adversarial loss, which is based on the idea of a two-player minimax game. The generator's loss is the negative log-probability that the discriminator assigns to its generated samples, while the discriminator's loss is the negative log-probability that it assigns to real samples plus the negative log-probability that it assigns to the generator's samples.
 
 One important aspect of training GANs is to ensure that the generator and discriminator are not too powerful relative to each other. If the generator is too powerful, it can generate samples that perfectly mimic the training data, causing the discriminator to be unable to distinguish between real and generated samples. On the other hand, if the discriminator is too powerful, it can easily distinguish between real and generated samples, causing the generator to generate low-quality samples. This is known as the "mode collapse" problem in GANs.
