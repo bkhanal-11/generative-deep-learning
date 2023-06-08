@@ -1,6 +1,7 @@
-W# asserstein Generative Adversarial Network (WGAN)
+# Wasserstein Generative Adversarial Network (WGAN)
 
 Wasserstein Generative Adversarial Network (WGAN) is a variant of the Generative Adversarial Network (GAN) algorithm that introduces the Wasserstein distance as a metric for training the generator and discriminator models. WGAN aims to improve stability and address some of the limitations of traditional GANs, such as mode collapse and training convergence issues.
+
 ## Key Concepts
 
 1. Generative Adversarial Network (GAN)
