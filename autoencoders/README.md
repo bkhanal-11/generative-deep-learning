@@ -11,3 +11,31 @@ Here is an example of an autoencoder architecture:
 In this architecture, the input data is passed through the encoder network, which compresses it into a lower-dimensional representation in the latent space. The decoder network then takes this representation and reconstructs the original data.
 
 During training, the network is fed pairs of input and target data, and the weights of the encoder and decoder networks are adjusted to minimize the difference between the output of the decoder and the target data.
+
+### Key Discussion Points
+
+1. Difference between generative and discriminative modelling
+
+
+2. Motivation behind Autoencoder
+
+
+3. Basic structure of Autoencoder
+
+
+4. Dimensionality reduction, Feature Extraction with Encoder and Input generation from Decoder
+
+
+5. Autoencoder vs PCA vs SVD
+
+
+6. Analogy of Autoencoder with Art Exhibition
+
+
+7. Visualization of MNIST dataset in 2-dimensional latent space
+
+
+8. Limitation of Autoencoder and introduction to Variational Autoencoder
+
+
+9. Comparison of U-Net and VAE
