@@ -29,3 +29,17 @@ During training, the VQ-VAE learns to optimize the codewords and the encoder-dec
 Once the model is trained, it can be used to generate new data by sampling from the codewords in the codebook and feeding them into the decoder network to produce new samples.
 
 Overall, VQ-VAE is an effective method for compressing and generating high-dimensional data, particularly in image and audio processing tasks. Its ability to capture the structure and patterns in the data allows it to generate high-quality samples that resemble the input data.
+
+### Key Discussion Points
+
+1. Conditional and Controllable Generation
+
+2. Review of K-Means, Vector Quantization and Variational Autoencoder
+
+3. Architecture of VQ-VAE
+
+4. Embeddings for output from encoder
+
+5. Losses in VQ-VAE
+
+6. Brief on VQ-VAE 2
