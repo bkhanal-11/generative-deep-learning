@@ -34,7 +34,7 @@ Inference pipeline is given in `demo.ipynb`. After training the model, feel free
 
 Assume we have a batch of N images paired with their respective descriptions e.g. `<image1, text1>`, `<image2, text2>`, `<imageN, textN>`.
 
-Contrastive Pre-training aims to jointly train an Image and a Text Encoder that produce image embeddings [I1, I2 … IN] and text embeddings [T1, T2 … TN], in a way that:
+Contrastive Pre-training aims to jointly train an Image and a Text Encoder that produce image embeddings [`I1`, `I2`,...,`IN`] and text embeddings [`T1`, `T2`,..., `TN`], in a way that:
 
 - The cosine similarities of the correct `<image-text>` embedding pairs `<I1,T1>`, `<I2,T2>` (where `i=j`) are maximized.
 
@@ -48,7 +48,7 @@ Here’s a step-by-step breakdown of how CLIP works:
 
 3. For every image in the batch, the Image Encoder computes an image vector. The first image corresponds to the `I1` vector, the second to `I2`, and so on. Each vector is of size `de`, where de is the size of the latent dimension. Hence, the output of this step is $N \times$ `de` matrix.
 
-4. Similarly, the textual descriptions are squashed into text embeddings [$T1$, $T2$,...,$TN$], producing a $N \times$ `de` matrix.
+4. Similarly, the textual descriptions are squashed into text embeddings [`T1`, `T2`,...,`TN`], producing a $N \times$ `de` matrix.
 
 5. Finally, we multiply those matrices and calculate the pairwise cosine similarities between every image and text description. This produces an $N \times N$  matrix.
 
