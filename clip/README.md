@@ -48,7 +48,7 @@ Here’s a step-by-step breakdown of how CLIP works:
 
 3. For every image in the batch, the Image Encoder computes an image vector. The first image corresponds to the `I1` vector, the second to `I2`, and so on. Each vector is of size `de`, where de is the size of the latent dimension. Hence, the output of this step is $N \times$ `de` matrix.
 
-4. Similarly, the textual descriptions are squashed into text embeddings [$T1, T2,...,TN$], producing a $N \times$ `de` matrix.
+4. Similarly, the textual descriptions are squashed into text embeddings [$T1$, $T2$,...,$TN$], producing a $N \times$ `de` matrix.
 
 5. Finally, we multiply those matrices and calculate the pairwise cosine similarities between every image and text description. This produces an $N \times N$  matrix.
 
@@ -56,7 +56,7 @@ Here’s a step-by-step breakdown of how CLIP works:
 
 A few extra remarks:
 
-- The model uses the symmetric cross-entropy loss as its optimization objective. This type of loss minimizes both the image-to-text direction as well as the text-to-image direction (remember, our contrastive loss matrix keeps both the (I1, T2) and (I2, T1) cosine similarities).
+- The model uses the symmetric cross-entropy loss as its optimization objective. This type of loss minimizes both the image-to-text direction as well as the text-to-image direction (remember, our contrastive loss matrix keeps both the (`I1`, `T2`) and (`I2`, `T1`) cosine similarities).
 
 - Contrastive pre-training is not entirely new. It was introduced in previous models and was simply adapted by CLIP.
 
