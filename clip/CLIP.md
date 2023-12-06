@@ -43,3 +43,5 @@ The loss function in CLIP is formed by maximizing the similarity of correct imag
 [2] [OpenAI’s CLIP explained! | Examples, links to code and pretrained model](https://www.youtube.com/watch?v=dh8Rxhf7cLU)
 
 [3] [OpenAI CLIP (Contrastive Language-Image Pretraining](https://github.com/R4j4n/OpenAI-CLIP-in-PyTorch)
+
+[4] [Model $\cdot$ CLIP](https://vinija.ai/models/CLIP/)
