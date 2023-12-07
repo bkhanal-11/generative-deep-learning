@@ -16,13 +16,8 @@ class ImageEncoder(nn.Module):
                  pretrained=CFG.pretrained, 
                  trainable=CFG.trainable):
         super().__init__()
-        self.model = timm.create_model(
-            model_name, pretrained, num_classes=0, global_pool="avg"
-        )
+        self.model = timm.create_model(model_name, pretrained)
         self.data_config = timm.data.resolve_model_data_config(self.model)
-        
-        for p in self.model.parameters():
-            p.requires_grad = trainable
 
     def forward(self, x):
         return self.model(x)
@@ -44,9 +39,6 @@ class TextEncoder(nn.Module):
             
         for p in self.model.parameters():
             p.requires_grad = trainable
-
-        # we are using the CLS token hidden representation as the sentence's embedding
-        self.target_token_idx = 0
             
         self.tokenizer = AutoTokenizer.from_pretrained(CFG.text_tokenizer)
         

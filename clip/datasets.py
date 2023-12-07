@@ -1,4 +1,3 @@
-import os
 import cv2 as cv
 import torch
 import albumentations as A
@@ -38,8 +37,6 @@ class CLIPDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.captions)
 
-
-
 def get_transforms(mode="train"):
     if mode == "train":
         return A.Compose(
@@ -55,3 +52,4 @@ def get_transforms(mode="train"):
                 A.Normalize(max_pixel_value=255.0, always_apply=True),
             ]
         )
+        

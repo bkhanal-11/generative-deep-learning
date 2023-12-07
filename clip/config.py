@@ -18,10 +18,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Pre-trained Image and Text encoder models
 model_name = 'vit_base_patch16_224.augreg2_in21k_ft_in1k'
-image_embedding = 768
-text_encoder_model = "sentence-transformers/bert-base-nli-mean-tokens"
+image_embedding = 1000
+text_encoder_model = "sentence-transformers/all-mpnet-base-v2"
 text_embedding = 768
-text_tokenizer = "sentence-transformers/bert-base-nli-mean-tokens"
+text_tokenizer = "sentence-transformers/all-mpnet-base-v2"
 max_length = 100
 
 pretrained = True # for both image encoder and text encoder

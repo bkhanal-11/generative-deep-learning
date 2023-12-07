@@ -2,9 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import itertools
 
 import torch
-from transformers import AutoTokenizer
 
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -19,7 +19,7 @@ def make_train_valid_dfs():
     dataframe = pd.read_csv(CFG.captions_path)
     max_id = dataframe["id"].max() + 1 if not CFG.debug else 100
     image_ids = np.arange(0, max_id)
-    np.random.seed(42)
+    np.random.seed(123)
     valid_ids = np.random.choice(
         image_ids, size=int(0.2 * len(image_ids)), replace=False
     )
@@ -82,15 +82,21 @@ def valid_epoch(model, valid_loader):
 
 def main():
     train_df, valid_df = make_train_valid_dfs()
-    tokenizer = AutoTokenizer.from_pretrained(CFG.text_tokenizer)
+    tokenizer = CLIPModel().tokenizer
     train_loader = build_loaders(train_df, tokenizer, mode="train")
     valid_loader = build_loaders(valid_df, tokenizer, mode="valid")
 
 
     model = CLIPModel().to(CFG.device)
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=CFG.head_lr, weight_decay=CFG.weight_decay
-    )
+    
+    params = [
+        {"params": model.image_encoder.parameters(), "lr": CFG.image_encoder_lr},
+        {"params": model.text_encoder.parameters(), "lr": CFG.text_encoder_lr},
+        {"params": itertools.chain(
+            model.image_projection.parameters(), model.text_projection.parameters()
+        ), "lr": CFG.head_lr, "weight_decay": CFG.weight_decay}
+    ]
+    optimizer = torch.optim.AdamW(params, weight_decay=CFG.weight_decay)
     lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="min", patience=CFG.patience, factor=CFG.factor
     )
@@ -113,3 +119,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
