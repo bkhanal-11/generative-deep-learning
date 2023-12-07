@@ -1,0 +1,12 @@
+albumentations
+git+https://github.com/openai/CLIP.git
+numpy
+opendatasets
+opencv-python
+pandas
+scikit-learn
+timm
+torch
+torchvision
+tqdm
+transformers
