@@ -64,6 +64,8 @@ A few extra remarks:
 
 **Text to Image:**
 
+The following results are the most relevant images a from the validation set related to the text query.
+
 ![txt2img1](results/1702006209.1827004.jpg)
 
 ![txt2img2](results/1702006209.1827004.jpg)
@@ -71,6 +73,8 @@ A few extra remarks:
 ![txt2img3](results/1702006211.4177525.jpg)
 
 **Image to Text:**
+
+The following results are the most relevant texts a from the validation set related to the image query.
 
 ![img2txt1](results/1702006247.425428.jpg)
 
