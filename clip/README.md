@@ -62,4 +62,18 @@ A few extra remarks:
 
 ### Results
 
-[COMING SOON]
+**Text to Image:**
+
+![txt2img1](results/1702006209.1827004.jpg)
+
+![txt2img2](results/1702006209.1827004.jpg)
+
+![txt2img3](results/1702006211.4177525.jpg)
+
+**Image to Text:**
+
+![img2txt1](results/1702006247.425428.jpg)
+
+![img2txt1](results/1702006250.1443055.jpg)
+
+![img2txt1](results/1702006250.9296675.jpg)
