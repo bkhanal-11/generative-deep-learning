@@ -66,7 +66,7 @@ A few extra remarks:
 
 The following results are the most relevant images a from the validation set related to the text query.
 
-![txt2img1](results/1702006209.1827004.jpg)
+![txt2img1](results/1702006206.8969283.jpg)
 
 ![txt2img2](results/1702006209.1827004.jpg)
 
